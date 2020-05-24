@@ -1,29 +1,37 @@
 
-ch_refFILE = Channel.value("$baseDir/refFILE")
 
-inputFilePattern = "./*_{R1,R2}.fastq.gz"
-Channel.fromFilePairs(inputFilePattern)
-        .into {  ch_in_PROCESS }
+Channel.fromFilePairs("./*_{R1,R2}.p.fastq.gz")
+        .into {  ch_in_fastqc }
 
 
+/*
+###############
+fastqc
+###############
+*/
 
-process process {
-#    publishDir 'results/PROCESS'
-#    container 'PROCESS_CONTAINER'
+
+
+process fastqc {
+    publishDir 'results/fastqc'
+    container 'quay.io/biocontainers/fastqc:0.11.9--0'
 
 
     input:
-    set genomeFileName, file(genomeReads) from ch_in_PROCESS
+    set genomeFileName, file(genomeReads) from ch_in_fastqc
 
     output:
-    path("""${PROCESS_OUTPUT}""") into ch_out_PROCESS
+    path("""${genomeName}.json""") into ch_out_fastqc
 
 
     script:
-    #FIXME
     genomeName= genomeFileName.toString().split("\\_")[0]
     
     """
-    CLI PROCESS
+    mkdir ${genomeName}_fastqc
+    fastqc -o ${genomeName}_fastqc ${genomeReads[0]}
+    fastqc -o ${genomeName}_fastqc ${genomeReads[1]}
     """
 }
+
+# TODO add multiqc command to concatenate everything
