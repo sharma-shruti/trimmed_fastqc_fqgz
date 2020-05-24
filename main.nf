@@ -21,7 +21,7 @@ process fastqc {
     set genomeFileName, file(genomeReads) from ch_in_fastqc
 
     output:
-    path("""${genomeName}.json""") into ch_out_fastqc
+    path("""${genomeName}_fastqc""") into ch_out_fastqc
 
 
     script:
