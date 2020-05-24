@@ -34,4 +34,4 @@ process fastqc {
     """
 }
 
-# TODO add multiqc command to concatenate everything
+// TODO add multiqc command to concatenate everything
