@@ -1,7 +1,13 @@
+#!/usr/bin/env nextflow
+
+/*
+################
+params
+################
+*/
+
 params.saveBy = 'copy'
 params.trimmed= true
-
-
 
 
 inputUntrimmedRawFilePattern = "./*_{R1,R2}.fastq.gz"
@@ -31,7 +37,7 @@ process fastqc {
     set genomeFileName, file(genomeReads) from ch_in_fastqc
 
     output:
-    path("""${genomeName}_fastqc""") into ch_out_fastqc
+    path("""${genomeName}""") into ch_out_fastqc
 
 
     script:
@@ -44,4 +50,4 @@ process fastqc {
     """
 }
 
-// TODO add multiqc command to concatenate everything
+
