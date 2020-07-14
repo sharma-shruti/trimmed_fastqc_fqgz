@@ -42,11 +42,12 @@ process fastqc {
 
     script:
     genomeName= genomeFileName.toString().split("\\_")[0]
+    outdirName= genomeName
     
     """
-    mkdir ${genomeName}_fastqc
-    fastqc -o ${genomeName}_fastqc ${genomeReads[0]}
-    fastqc -o ${genomeName}_fastqc ${genomeReads[1]}
+    mkdir ${outdirName}
+    fastqc -o ${outdirName} ${genomeReads[0]}
+    fastqc -o ${outdirName} ${genomeReads[1]}
     """
 }
 
