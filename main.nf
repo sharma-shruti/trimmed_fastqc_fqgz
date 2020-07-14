@@ -23,7 +23,7 @@ fastqc
 
 
 process fastqc {
-    publishDir 'results/fastqc', mode: saveBy
+    publishDir 'results/fastqc', mode: params.saveBy
     container 'quay.io/biocontainers/fastqc:0.11.9--0'
 
 
