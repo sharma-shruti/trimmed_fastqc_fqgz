@@ -29,7 +29,7 @@ fastqc
 */
 
 
-
+if(!params.multiQC) {
 process fastqc {
     publishDir params.resultsDir, mode: params.saveBy
     container 'quay.io/biocontainers/fastqc:0.11.9--0'
@@ -51,13 +51,13 @@ process fastqc {
     fastqc -o ${outdirName} ${genomeReads[0]}
     fastqc -o ${outdirName} ${genomeReads[1]}
     """
+  }
+
 }
 
 
 if(params.multiQC) {
-        
-        
-
+              
 Channel.fromPath("""${params.resultsDir}""")
         .into {  ch_in_multiqc }
         
