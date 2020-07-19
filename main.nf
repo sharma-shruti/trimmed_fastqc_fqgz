@@ -1,15 +1,7 @@
-#!/usr/bin/env nextflow
-
-/*
-################
-params
-################
-*/
-
 params.saveBy = 'copy'
 params.trimmed= true
-params.multiQC= false
-params.resultsDir= 'results/fastqc'
+
+
 
 
 inputUntrimmedRawFilePattern = "./*_{R1,R2}.fastq.gz"
@@ -29,9 +21,9 @@ fastqc
 */
 
 
-if(!params.multiQC) {
+
 process fastqc {
-    publishDir params.resultsDir, mode: params.saveBy
+    publishDir 'results/fastqc', mode: params.saveBy
     container 'quay.io/biocontainers/fastqc:0.11.9--0'
 
 
@@ -39,51 +31,17 @@ process fastqc {
     set genomeFileName, file(genomeReads) from ch_in_fastqc
 
     output:
-    path("""${genomeName}""") into ch_out_fastqc
+    path("""${genomeName}_fastqc""") into ch_out_fastqc
 
 
     script:
     genomeName= genomeFileName.toString().split("\\_")[0]
-    outdirName= genomeName
     
     """
-    mkdir ${outdirName}
-    fastqc -o ${outdirName} ${genomeReads[0]}
-    fastqc -o ${outdirName} ${genomeReads[1]}
+    mkdir ${genomeName}_fastqc
+    fastqc -o ${genomeName}_fastqc ${genomeReads[0]}
+    fastqc -o ${genomeName}_fastqc ${genomeReads[1]}
     """
-  }
-
 }
 
-
-if(params.multiQC) {
-              
-Channel.fromPath("""${params.resultsDir}""")
-        .into {  ch_in_multiqc }
-        
-     
-process multiQC {
-    publishDir "results/multiqc", mode: params.saveBy
-    container 'quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0'
-
-    input: 
-    path("""${params.resultsDir}""") from ch_in_multiqc
-    
-    output:
-    tuple path("""multiqc_data"""), 
-          path("""multiqc_report.html""") from ch_out_multiqc
-
-    
-    script:
-    
-    
-    """
-    cd ${params.resultsDir}
-    multiqc .
-    """
-
-}
-
-
-
-}
+// TODO add multiqc command to concatenate everything
