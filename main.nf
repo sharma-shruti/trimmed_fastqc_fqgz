@@ -8,6 +8,8 @@ params
 
 params.saveBy = 'copy'
 params.trimmed= true
+params.multiQC= false
+params.resultsDir= 'results/fastqc'
 
 
 inputUntrimmedRawFilePattern = "./*_{R1,R2}.fastq.gz"
@@ -29,7 +31,7 @@ fastqc
 
 
 process fastqc {
-    publishDir 'results/fastqc', mode: params.saveBy
+    publishDir params.resultsDir, mode: params.saveBy
     container 'quay.io/biocontainers/fastqc:0.11.9--0'
 
 
@@ -52,3 +54,36 @@ process fastqc {
 }
 
 
+if(params.multiQC) {
+        
+        
+
+Channel.fromPath("""${params.resultsDir}""")
+        .into {  ch_in_multiqc }
+        
+     
+process multiQC {
+    publishDir "results/multiqc", mode: params.saveBy
+    container 'quay.io/biocontainers/multiqc:1.9--pyh9f0ad1d_0'
+
+    input: 
+    path("""${params.resultsDir}""") from ch_in_multiqc
+    
+    output:
+    tuple path("""multiqc_data"""), 
+          path("""multiqc_report.html""") from ch_out_multiqc
+
+    
+    script:
+    
+    
+    """
+    cd ${params.resultsDir}
+    multiqc .
+    """
+
+}
+
+
+
+}
